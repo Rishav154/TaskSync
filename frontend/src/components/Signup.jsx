@@ -8,6 +8,7 @@ function Signup() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [acceptTerms, setAcceptTerms] = useState(false);
     //const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -16,6 +17,11 @@ function Signup() {
 
         if (password !== confirmPassword) {
             setMessage("Passwords do not match!");
+            return;
+        }
+
+        if (!acceptTerms) {
+            setMessage("You must accept the terms and conditions to register.");
             return;
         }
 
@@ -115,6 +121,10 @@ function Signup() {
                                     id="terms"
                                     type="checkbox"
                                     className="w-4 h-4 border border-gray-600 rounded bg-gray-700 focus:ring-3 focus:ring-blue-500"
+                                    checked={acceptTerms}
+                                    onChange={(e) =>
+                                        setAcceptTerms(e.target.checked)
+                                    }
                                     required=""
                                 />
                             </div>
