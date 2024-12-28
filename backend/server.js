@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARES
 app.use(bodyParser.json());
 app.use(cors({
-    origin:["https://task-sync-frontend-rho.vercel.app/"],
+    origin:["https://task-sync-backend.vercel.app"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
