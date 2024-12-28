@@ -14,11 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARES
 app.use(bodyParser.json());
-app.use(cors({
-    origin:["https://task-sync-backend.vercel.app"],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+app.use(cors());
 
 // CONNECT TO MONGODB
 mongoose
@@ -42,10 +38,6 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-//default
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
 
 // Signup Route
 app.post("/api/signup", async (req, res) => {
