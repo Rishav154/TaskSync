@@ -25,7 +25,7 @@ function Signup() {
 
         try {
             const response = await axios.post(
-                "http://localhost:3000/api/signup",
+                `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/signup`,
                 {
                     username,
                     password,

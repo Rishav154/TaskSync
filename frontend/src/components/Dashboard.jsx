@@ -18,8 +18,8 @@ function Dashboard() {
                 const headers = { Authorization: token };
 
                 const [todosResponse, notesResponse] = await Promise.all([
-                    axios.get('http://localhost:3000/api/todos', { headers }),
-                    axios.get('http://localhost:3000/api/notes', { headers }),
+                        axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/todos`, { headers }),
+                    axios.get(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/notes`, { headers }),
                 ]);
 
                 setTodos(todosResponse.data.active);
@@ -40,7 +40,7 @@ function Dashboard() {
                 const headers = { Authorization: token };
 
                 const response = await axios.post(
-                    'http://localhost:3000/api/todos',
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/todos`,
                     { text: input.trim() },
                     { headers }
                 );
@@ -65,7 +65,7 @@ function Dashboard() {
             }
 
             const response = await axios.put(
-                `http://localhost:3000/api/todos/${_id}/complete`,
+                `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/todos/${_id}/complete`,
                 {},
                 { headers }
             );
@@ -85,7 +85,7 @@ function Dashboard() {
             const headers = { Authorization: token };
 
             const response = await axios.put(
-                `http://localhost:3000/api/todos/${_id}/restore`,
+                `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/todos/${_id}/restore`,
                 {},
                 { headers }
             );
@@ -103,7 +103,7 @@ function Dashboard() {
             const token = localStorage.getItem('token');
             const headers = { Authorization: token };
 
-            await axios.delete(`http://localhost:3000/api/todos/${_id}`, { headers });
+            await axios.delete(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/todos/${_id}`, { headers });
             setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
         } catch (error) {
             console.error("Failed to permanently remove todo", error);
@@ -118,7 +118,7 @@ function Dashboard() {
                 const headers = { Authorization: token };
 
                 const response = await axios.post(
-                    'http://localhost:3000/api/notes',
+                    `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/notes`,
                     { text: noteInput.trim() },
                     { headers }
                 );
@@ -136,7 +136,7 @@ function Dashboard() {
             const token = localStorage.getItem('token');
             const headers = { Authorization: token };
 
-            await axios.delete(`http://localhost:3000/api/notes/${_id}`, { headers });
+            await axios.delete(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/notes/${_id}`, { headers });
 
             setNotes(notes => notes.filter(note => note._id !== _id));
         } catch (error) {
