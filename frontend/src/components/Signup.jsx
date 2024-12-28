@@ -9,11 +9,9 @@ function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
     const [acceptTerms, setAcceptTerms] = useState(false);
-    //const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //setLoading(true);
 
         if (password !== confirmPassword) {
             setMessage("Passwords do not match!");
@@ -37,7 +35,6 @@ function Signup() {
         } catch (error) {
             setMessage(`Error registering user. ${error}`);
         }
-        //setLoading(false);
     };
 
     return (

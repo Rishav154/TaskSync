@@ -2,23 +2,43 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("./model/UserModel");
 const mongoose = require("mongoose");
+const Todo = require('./model/TodoModel');
+const Note = require('./model/NotesModel');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//MIDDLEWARES
+// MIDDLEWARES
 app.use(bodyParser.json());
 app.use(cors());
 
-//CONNECT TO MONGODB
+// CONNECT TO MONGODB
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Connected to Database"))
     .catch((err) => console.error("Failed to connect to Database:", err));
 
-//Signup route
+// Verify Token Middleware
+const verifyToken = (req, res, next) => {
+    const token = req.header("Authorization");
+
+    if (!token) {
+        return res.status(401).send({ error: "Access Denied" });
+    }
+
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } catch (err) {
+        res.status(400).send({ error: "Invalid Token" });
+    }
+};
+
+// Signup Route
 app.post("/api/signup", async (req, res) => {
     const { username, password } = req.body;
 
@@ -28,17 +48,16 @@ app.post("/api/signup", async (req, res) => {
             return res.status(400).send({ error: "Username already taken" });
         }
 
-        const user = new User({ username, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ username, password: hashedPassword });
         await user.save();
-        res.status(201).send({
-            message: "User registered successfully! You can now Log In",
-        });
+        res.status(201).send({ message: "User registered successfully! You can now Log In" });
     } catch (error) {
         res.status(500).send({ error: "Failed to register user" });
     }
 });
 
-//Login route
+// Login Route
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
 
@@ -48,14 +67,141 @@ app.post("/api/login", async (req, res) => {
             return res.status(400).send({ error: "User not found" });
         }
 
-        if (user.password !== password) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
             return res.status(400).send({ error: "Invalid password" });
         }
 
-        // If authentication is successful
-        res.status(200).send({ message: "Login successful", user });
+        const token = jwt.sign(
+            { id: user._id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).send({ message: "Login successful", token });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).send({ error: "Server error" });
+    }
+});
+
+// Dashboard Route
+app.get("/api/dashboard", verifyToken, async (req, res) => {
+    try {
+        res.status(200).send({ message: "Welcome to the dashboard", user: req.user });
     } catch (error) {
         res.status(500).send({ error: "Server error" });
+    }
+});
+
+// Get all todos for a user
+app.get('/api/todos', verifyToken, async (req, res) => {
+    try {
+        const activeTodos = await Todo.find({ userId: req.user.id, status: 'active' });
+        const completedTodos = await Todo.find({ userId: req.user.id, status: 'completed' });
+        res.status(200).send({ active: activeTodos, completed: completedTodos });
+    } catch (error) {
+        res.status(500).send({ error: "Failed to fetch todos" });
+    }
+});
+
+
+// Create a new todo
+app.post('/api/todos', verifyToken, async (req, res) => {
+    const { text } = req.body;
+    try {
+        const todo = new Todo({ text, userId: req.user.id });
+        await todo.save();
+        res.status(201).send(todo);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to create todo" });
+    }
+});
+
+// Delete a todo
+app.put('/api/todos/:id/complete', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const todo = await Todo.findByIdAndUpdate(
+            id,
+            { status: 'completed' },
+            { new: true }
+        );
+        res.status(200).send(todo);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to update todo" });
+    }
+});
+
+// Delete a _todo permanently
+app.delete('/api/todos/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        await Todo.findByIdAndDelete(id);
+        res.status(200).send({ message: "Todo deleted successfully" });
+    } catch (error) {
+        res.status(500).send({ error: "Failed to delete todo" });
+    }
+});
+
+//restore a _todo
+app.put('/api/todos/:id/restore', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const todo = await Todo.findByIdAndUpdate(
+            id,
+            { status: 'active' },
+            { new: true }
+        );
+        res.status(200).send(todo);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to restore todo" });
+    }
+});
+
+// Restore a todo
+app.post('/api/todos/restore', verifyToken, async (req, res) => {
+    const { todo } = req.body;
+    try {
+        const restoredTodo = new Todo({
+            text: todo.text,
+            userId: req.user.id
+        });
+        await restoredTodo.save();
+        res.status(201).send(restoredTodo);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to restore todo" });
+    }
+});
+
+// Similar endpoints for Notes
+app.get('/api/notes', verifyToken, async (req, res) => {
+    try {
+        const notes = await Note.find({ userId: req.user.id });
+        res.status(200).send(notes);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to fetch notes" });
+    }
+});
+
+app.post('/api/notes', verifyToken, async (req, res) => {
+    const { text } = req.body;
+    try {
+        const note = new Note({ text, userId: req.user.id });
+        await note.save();
+        res.status(201).send(note);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to create note" });
+    }
+});
+
+app.delete('/api/notes/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        await Note.findByIdAndDelete(id);
+        res.status(200).send({ message: "Note deleted successfully" });
+    } catch (error) {
+        res.status(500).send({ error: "Failed to delete note" });
     }
 });
 

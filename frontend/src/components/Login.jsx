@@ -22,9 +22,10 @@ function Login() {
                 }
             );
 
-            if (response.status === 200) {
-                navigate("/dashboard");
-            }
+            const { token } = response.data;
+            localStorage.setItem("token", token);
+            navigate("/dashboard");
+
         } catch (err) {
             setError("Invalid credentials. Please try again.");
             console.log(err);
@@ -85,7 +86,7 @@ function Login() {
                                 className="shadow-sm bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                 placeholder="Password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)} // Update state on input change
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                         </div>

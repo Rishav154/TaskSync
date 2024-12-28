@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useEffect } from 'react';
+import axios from 'axios';
 import background from "../assets/dashboardBg.png";
 
 function Dashboard() {
@@ -8,49 +10,144 @@ function Dashboard() {
     const [notes, setNotes] = useState([]);
     const [noteInput, setNoteInput] = useState("");
 
-    const handleSubmit = () => {
+    // Fetch data on load
+    useEffect(() => {
+        const fetchTodosAndNotes = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = { Authorization: token };
+
+                const [todosResponse, notesResponse] = await Promise.all([
+                    axios.get('http://localhost:3000/api/todos', { headers }),
+                    axios.get('http://localhost:3000/api/notes', { headers }),
+                ]);
+
+                setTodos(todosResponse.data.active);
+                setRemovedTodos(todosResponse.data.completed);
+                setNotes(notesResponse.data);
+            } catch (error) {
+                console.error("Failed to fetch todos/notes", error);
+            }
+        };
+
+        fetchTodosAndNotes();
+    }, []);
+
+    const handleSubmit = async () => {
         if (input.trim()) {
-            setTodos((todos) => [
-                ...todos,
-                { text: input.trim(), id: Math.random().toString(36).slice(2, 11) },
-            ]);
-            setInput("");
+            try {
+                const token = localStorage.getItem('token');
+                const headers = { Authorization: token };
+
+                const response = await axios.post(
+                    'http://localhost:3000/api/todos',
+                    { text: input.trim() },
+                    { headers }
+                );
+
+                setTodos((todos) => [...todos, response.data]);
+                setInput("");
+            } catch (error) {
+                console.error("Failed to create todo", error);
+            }
         }
     };
 
-    const removeTodo = (id) => {
-        const todoToRemove = todos.find((t) => t.id === id);
-        setRemovedTodos((removedTodos) => [...removedTodos, todoToRemove]);
-        setTodos((todos) => todos.filter((t) => t.id !== id));
+    const removeTodo = async (_id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: token };
+
+            const todoToRemove = todos.find((t) => t._id === _id);
+            if (!todoToRemove) {
+                console.error("Todo not found");
+                return;
+            }
+
+            const response = await axios.put(
+                `http://localhost:3000/api/todos/${_id}/complete`,
+                {},
+                { headers }
+            );
+
+            setTodos((todos) => todos.filter((t) => t._id !== _id));
+            setRemovedTodos((removedTodos) => [...removedTodos, response.data]);
+        } catch (error) {
+            console.error("Failed to complete todo", error);
+        }
     };
 
-    const restoreTodo = (id) => {
-        const todoToRestore = removedTodos.find((t) => t.id === id);
-        setTodos((todos) => [...todos, todoToRestore]);
-        setRemovedTodos((removedTodos) => removedTodos.filter((t) => t.id !== id));
+
+
+    const restoreTodo = async (_id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: token };
+
+            const response = await axios.put(
+                `http://localhost:3000/api/todos/${_id}/restore`,
+                {},
+                { headers }
+            );
+
+            setTodos((todos) => [...todos, response.data]);
+            setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
+        } catch (error) {
+            console.error("Failed to restore todo", error);
+            alert("Failed to restore todo. Please try again.");
+        }
     };
 
-    const removePermanently = (id) => {
-        setRemovedTodos((removedTodos) => removedTodos.filter((t) => t.id !== id));
+    const removePermanently = async (_id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: token };
+
+            await axios.delete(`http://localhost:3000/api/todos/${_id}`, { headers });
+            setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
+        } catch (error) {
+            console.error("Failed to permanently remove todo", error);
+        }
     };
 
-    const addNote = () => {
+
+    const addNote = async () => {
         if (noteInput.trim()) {
-            setNotes((notes) => [
-                ...notes,
-                { text: noteInput.trim(), id: Math.random().toString(36).slice(2, 11) },
-            ]);
-            setNoteInput("");
+            try {
+                const token = localStorage.getItem('token');
+                const headers = { Authorization: token };
+
+                const response = await axios.post(
+                    'http://localhost:3000/api/notes',
+                    { text: noteInput.trim() },
+                    { headers }
+                );
+
+                setNotes((notes) => [...notes, response.data]);
+                setNoteInput("");
+            } catch (error) {
+                console.error("Failed to create note", error);
+            }
         }
     };
 
-    const deleteNote = (id) => {
-        setNotes((notes) => notes.filter((note) => note.id !== id));
+    const deleteNote = async (_id) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: token };
+
+            await axios.delete(`http://localhost:3000/api/notes/${_id}`, { headers });
+
+            setNotes(notes => notes.filter(note => note._id !== _id));
+        } catch (error) {
+            console.error("Failed to delete note", error);
+            alert("Failed to delete note. Please try again.");
+        }
     };
 
-    const editNote = (id, newText) => {
+    const editNote = (_id, newText) => {
         setNotes((notes) =>
-            notes.map((note) => (note.id === id ? { ...note, text: newText } : note))
+            notes.map((note) => (note._id === _id ? { ...note, text: newText } : note))
         );
     };
 
@@ -81,7 +178,7 @@ function Dashboard() {
                         />
                         <button
                             onClick={handleSubmit}
-                            className="bg-gray-300 hover:bg-gray-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
+                            className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
                         >
                             Add
                         </button>
@@ -94,14 +191,14 @@ function Dashboard() {
                             <div
                                 className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                 <ul className="space-y-4 pr-2">
-                                    {todos.map(({text, id}) => (
+                                    {todos.map(({text, _id}) => (
                                         <li
                                             className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
-                                            key={id}
+                                            key={_id}
                                         >
                                             <span className="text-white text-sm break-words mr-4">{text}</span>
                                             <button
-                                                onClick={() => removeTodo(id)}
+                                                onClick={() => removeTodo(_id)}
                                                 className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
                                             >
                                                 Remove
@@ -125,13 +222,12 @@ function Dashboard() {
                         {/* Removed To-Do List */}
                         <div className="flex-1">
                             <h2 className="text-xl text-white font-majorMono mb-4">Completed Tasks</h2>
-                            <div
-                                className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                            <div className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                 <ul className="space-y-4 pr-2">
-                                    {removedTodos.map(({text, id}) => (
+                                    {removedTodos.map(({text, _id}) => (
                                         <li
                                             className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
-                                            key={id}
+                                            key={_id}
                                         >
                                             <span className="text-white text-sm break-words line-through mr-4">
                                                 {text}
@@ -139,14 +235,14 @@ function Dashboard() {
                                             <div
                                                 className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <button
-                                                    onClick={() => restoreTodo(id)}
+                                                    onClick={() => restoreTodo(_id)}
                                                     className="text-green-500 text-xs"
                                                 >
                                                     Restore
                                                 </button>
                                                 <div className="border-l-2 border-gray-400 h-6"></div>
                                                 <button
-                                                    onClick={() => removePermanently(id)}
+                                                    onClick={() => removePermanently(_id)}
                                                     className="text-red-500 text-xs"
                                                 >
                                                     Remove Permanently
@@ -171,7 +267,7 @@ function Dashboard() {
                         Notes
                     </h1>
 
-                    <div className="mb-4 flex items-center gap-3">
+                    <div className="mb-12 mt-6 flex items-center gap-3">
                         <input
                             type="text"
                             id="note-element"
@@ -183,20 +279,20 @@ function Dashboard() {
                         />
                         <button
                             onClick={addNote}
-                            className="bg-gray-300 hover:bg-gray-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
+                            className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
                         >
                             Add
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                    <div className="overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400 h-[580px]">
                         {notes.length === 0 ? (
-                            <p className="text-gray-400 text-center mt-10">No notes available.</p>
+                            <p className="text-gray-400 text-center mt-20">No notes available.</p>
                         ) : (
                             <ul className="space-y-4 pr-2">
-                                {notes.map(({text, id}) => (
+                                {notes.map(({text, _id}) => (
                                     <li
-                                        key={id}
+                                        key={_id}
                                         className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
                                     >
                                         <span
@@ -208,13 +304,13 @@ function Dashboard() {
                                             }}
                                             onBlur={(e) => {
                                                 e.target.contentEditable = false;
-                                                editNote(id, e.target.textContent);
+                                                editNote(_id, e.target.textContent);
                                             }}
                                         >
                                             {text}
                                         </span>
                                         <button
-                                            onClick={() => deleteNote(id)}
+                                            onClick={() => deleteNote(_id)}
                                             className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
                                         >
                                             Delete
@@ -224,6 +320,7 @@ function Dashboard() {
                             </ul>
                         )}
                     </div>
+
                 </div>
             </div>
         </div>

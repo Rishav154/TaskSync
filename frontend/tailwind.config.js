@@ -19,4 +19,5 @@ export default {
     plugins: [
         tailwind_scrollbar,
     ],
+
 };

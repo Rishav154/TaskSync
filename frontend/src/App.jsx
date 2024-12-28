@@ -3,6 +3,7 @@ import Login from "./components/Login";
 import TermsAndCondition from "./components/TermsAndCondition";
 import Dashboard from "./components/Dashboard";
 import Home from "./components/Home";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 function App() {
@@ -25,7 +26,10 @@ function App() {
         },
         {
             path: "/dashboard",
-            element: <Dashboard />,
+            element: (<ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>
+            ),
         },
     ]);
 
