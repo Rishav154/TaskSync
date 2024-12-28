@@ -14,7 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARES
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin:[XXX],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 
 // CONNECT TO MONGODB
 mongoose
