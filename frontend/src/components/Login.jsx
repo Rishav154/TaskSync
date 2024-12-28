@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
-
 
 function Login() {
     const navigate = useNavigate();
