@@ -42,6 +42,11 @@ const verifyToken = (req, res, next) => {
     }
 };
 
+//default
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
 // Signup Route
 app.post("/api/signup", async (req, res) => {
     const { username, password } = req.body;
