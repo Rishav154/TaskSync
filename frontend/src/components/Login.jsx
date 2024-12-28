@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
+// eslint-disable-next-line no-undef
+const baseURL = process.env.BACKEND_URL;
+
 function Login() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
@@ -15,7 +18,7 @@ function Login() {
 
         try {
             const response = await axios.post(
-                `${import.meta.env.BACKEND_URL}/api/login`,
+                `${baseURL}/api/login`,
                 {
                     username,
                     password,

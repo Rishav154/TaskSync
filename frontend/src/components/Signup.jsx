@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
+// eslint-disable-next-line no-undef
+const baseURL = process.env.BACKEND_URL;
+
 function Signup() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -25,7 +28,7 @@ function Signup() {
 
         try {
             const response = await axios.post(
-                `${import.meta.env.BACKEND_URL}/api/signup`,
+                `${baseURL}/api/signup`,
                 {
                     username,
                     password,
