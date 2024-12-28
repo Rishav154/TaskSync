@@ -6,9 +6,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("./model/UserModel");
 const mongoose = require("mongoose");
-const Todo = require('./model/TodoModel'); // Import the _Todo model
-const Note = require('./model/NotesModel'); // Import the Note model
-
+const Todo = require('./model/TodoModel');
+const Note = require('./model/NotesModel');
 const app = express();
 const PORT = process.env.PORT || 3000;
 

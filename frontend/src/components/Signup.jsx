@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 function Signup() {
     const [username, setUsername] = useState("");
@@ -27,7 +26,7 @@ function Signup() {
 
         try {
             const response = await axios.post(
-                `${baseURL}/api/signup`,
+                `${import.meta.env.VITE_API_URL}/api/signup`,
                 {
                     username,
                     password,
