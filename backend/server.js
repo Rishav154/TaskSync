@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARES
 app.use(bodyParser.json());
 app.use(cors({
-    origin:[XXX],
+    origin:["https://task-sync-frontend-rho.vercel.app/"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
@@ -115,7 +115,7 @@ app.get('/api/todos', verifyToken, async (req, res) => {
 });
 
 
-// Create a new todo
+// Create a new _todo
 app.post('/api/todos', verifyToken, async (req, res) => {
     const { text } = req.body;
     try {
@@ -127,7 +127,7 @@ app.post('/api/todos', verifyToken, async (req, res) => {
     }
 });
 
-// Delete a todo
+// Delete a _todo
 app.put('/api/todos/:id/complete', verifyToken, async (req, res) => {
     const { id } = req.params;
     try {
