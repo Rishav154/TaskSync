@@ -14,7 +14,10 @@ const PORT = process.env.PORT || 3000;
 
 // MIDDLEWARES
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: ['https://your-app-name.vercel.app', 'http://localhost:5173'],
+    credentials: true
+}));
 
 // CONNECT TO MONGODB
 mongoose

@@ -35,3 +35,4 @@ yarn-error.log*
 # Ignore any private keys or credentials file
 *.pem
 *.key
+.vercel
