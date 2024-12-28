@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
-// eslint-disable-next-line no-undef
-const baseURL = process.env.BACKEND_URL;
+const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 
 function Login() {
     const navigate = useNavigate();

@@ -3,10 +3,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import background from "../assets/dashboardBg.png";
 
-
-// eslint-disable-next-line no-undef
-const baseURL = process.env.BACKEND_URL;
-
+const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 function Dashboard() {
     const [todos, setTodos] = useState([]);
@@ -23,7 +20,7 @@ function Dashboard() {
                 const headers = { Authorization: token };
 
                 const [todosResponse, notesResponse] = await Promise.all([
-                        axios.get(`${baseURL}/api/todos`, { headers }),
+                    axios.get(`${baseURL}/api/todos`, { headers }),
                     axios.get(`${baseURL}/api/notes`, { headers }),
                 ]);
 
@@ -136,23 +133,23 @@ function Dashboard() {
         }
     };
 
-    const deleteNote = async (_id) => {
+    const deleteNote = async (_id) => {  // Changed parameter to _id
         try {
             const token = localStorage.getItem('token');
             const headers = { Authorization: token };
 
-            await axios.delete(`${baseURL}/api/notes/${_id}`, { headers });
+            await axios.delete(`${baseURL}/api/notes/${_id}`, { headers });  // Changed to _id
 
-            setNotes(notes => notes.filter(note => note._id !== _id));
+            setNotes(notes => notes.filter(note => note._id !== _id));  // Changed to _id
         } catch (error) {
             console.error("Failed to delete note", error);
             alert("Failed to delete note. Please try again.");
         }
     };
 
-    const editNote = (_id, newText) => {
+    const editNote = (_id, newText) => {  // Changed parameter to _id
         setNotes((notes) =>
-            notes.map((note) => (note._id === _id ? { ...note, text: newText } : note))
+            notes.map((note) => (note._id === _id ? { ...note, text: newText } : note))  // Changed to _id
         );
     };
 
