@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { useEffect } from 'react';
+import { useState, useEffect } from "react";
 import axios from 'axios';
 import background from "../assets/dashboardBg.webp";
-import {useNavigate} from "react-router-dom"
-
+import { useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
 function Dashboard() {
     const [todos, setTodos] = useState([]);
@@ -14,6 +13,8 @@ function Dashboard() {
     const [noteInput, setNoteInput] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState("active");
+    const [isMenuOpen, setIsMenuOpen] = useState(false); // For mobile menu
     const navigate = useNavigate();
 
     const getAuthHeaders = () => {
@@ -31,7 +32,6 @@ function Dashboard() {
         navigate("/login");
     };
 
-    // Fetch data on load
     useEffect(() => {
         let isMounted = true;
 
@@ -94,8 +94,6 @@ function Dashboard() {
         );
     }
 
-
-
     const handleSubmit = async () => {
         if (input.trim()) {
             try {
@@ -131,8 +129,6 @@ function Dashboard() {
         }
     };
 
-
-
     const restoreTodo = async (_id) => {
         try {
             const response = await axios.put(
@@ -159,7 +155,6 @@ function Dashboard() {
             console.error("Failed to permanently remove todo", error);
         }
     };
-
 
     const addNote = async () => {
         if (noteInput.trim()) {
@@ -216,11 +211,18 @@ function Dashboard() {
                 <div className="pt-4">
                     {/* Navbar */}
                     <div
-                        className="bg-zinc-800 bg-opacity-75 py-2 px-6 flex justify-between items-center rounded-lg p-6 border border-zinc-500 mx-6">
+                        className="bg-zinc-800 bg-opacity-75 py-2 px-6 flex justify-between items-center rounded-lg p-6 border border-zinc-500 mx-6 relative">
                         <div className="text-white text-lg font-bold font-majorMono">Hello {username} !</div>
 
-                        {/* Navigation Links */}
-                        <div className="flex items-center space-x-8 font-majorMono">
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="md:hidden text-white"
+                        >
+                            {isMenuOpen ? <X size={24}/> : <Menu size={24}/>}
+                        </button>
+
+                        {/* Desktop Navigation Links */}
+                        <div className="hidden md:flex items-center space-x-8 font-majorMono">
                             <button
                                 onClick={() => navigate("/")}
                                 className="text-gray-300 hover:text-white text-sm"
@@ -240,13 +242,45 @@ function Dashboard() {
                                 Logout
                             </button>
                         </div>
+                        {isMenuOpen && (
+                            <div
+                                className="absolute right-0 top-full mt-2 w-48 bg-zinc-800 bg-opacity-90 backdrop-blur-md rounded-lg border border-zinc-500 shadow-lg py-2 md:hidden z-50">
+                                <button
+                                    onClick={() => {
+                                        navigate("/");
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-gray-300 hover:bg-zinc-700 hover:text-white text-sm font-majorMono"
+                                >
+                                    Home
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        navigate("/signup");
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-gray-300 hover:bg-zinc-700 hover:text-white text-sm font-majorMono"
+                                >
+                                    Switch Account
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        handleLogout();
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-gray-300 hover:bg-zinc-700 hover:text-red-500 text-sm font-majorMono"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 <div className="flex justify-center items-start">
                     <div className="grid grid-cols-1 md:grid-cols-3 w-screen gap-6 p-6 pt-4">
                         <div
-                            className="col-span-2 bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500">
+                            className="md:col-span-2 bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500">
                             <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
                                 To-Do List
                             </h1>
@@ -270,11 +304,36 @@ function Dashboard() {
                                 </button>
                             </div>
 
-                            <div className="flex space-x-6" style={{height: 'calc(100vh -365px)'}}>
+                            {/* Mobile Tabs */}
+                            <div className="md:hidden flex mb-4">
+                                <button
+                                    onClick={() => setActiveTab("active")}
+                                    className={`flex-1 py-2 text-white text-sm font-majorMono ${
+                                        activeTab === "active"
+                                            ? "border-b-2 border-white"
+                                            : "border-b border-gray-500"
+                                    }`}
+                                >
+                                    Active Tasks
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("completed")}
+                                    className={`flex-1 py-2 text-white text-sm font-majorMono ${
+                                        activeTab === "completed"
+                                            ? "border-b-2 border-white"
+                                            : "border-b border-gray-500"
+                                    }`}
+                                >
+                                    Completed Tasks
+                                </button>
+                            </div>
 
+                            <div className="flex space-x-6 md:space-x-6" style={{height: 'calc(100vh -365px)'}}>
                                 {/* Active To-Do List */}
-                                <div className="flex-1">
-                                    <h2 className="text-xl text-white font-majorMono mb-4">Active Tasks</h2>
+                                <div
+                                    className={`flex-1 ${activeTab === "active" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
+                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Active
+                                        Tasks</h2>
                                     <div
                                         className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                         <ul className="space-y-4 pr-2">
@@ -286,7 +345,7 @@ function Dashboard() {
                                                     <span className="text-white text-sm break-words mr-4">{text}</span>
                                                     <button
                                                         onClick={() => removeTodo(_id)}
-                                                        className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
+                                                        className="text-gray-300 hover:text-red-500 font-bold md:opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
                                                     >
                                                         Remove
                                                     </button>
@@ -301,14 +360,16 @@ function Dashboard() {
                                     </div>
                                 </div>
 
-                                {/* Separator Line */}
-                                <div className="px-2">
+                                {/* Desktop Separator Line */}
+                                <div className="hidden md:block px-2">
                                     <div className="border-l-2 border-gray-400 h-full"></div>
                                 </div>
 
-                                {/* Removed To-Do List */}
-                                <div className="flex-1">
-                                    <h2 className="text-xl text-white font-majorMono mb-4">Completed Tasks</h2>
+                                {/* Completed To-Do List */}
+                                <div
+                                    className={`flex-1 ${activeTab === "completed" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
+                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Completed
+                                        Tasks</h2>
                                     <div
                                         className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                         <ul className="space-y-4 pr-2">
@@ -321,7 +382,7 @@ function Dashboard() {
                                                     {text}
                                                 </span>
                                                     <div
-                                                        className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        className="flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                         <button
                                                             onClick={() => restoreTodo(_id)}
                                                             className="text-green-500 text-xs"
@@ -333,7 +394,7 @@ function Dashboard() {
                                                             onClick={() => removePermanently(_id)}
                                                             className="text-red-500 text-xs"
                                                         >
-                                                            Remove Permanently
+                                                            Remove
                                                         </button>
                                                     </div>
                                                 </li>
@@ -349,6 +410,7 @@ function Dashboard() {
                             </div>
                         </div>
 
+
                         <div
                             className="bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500 flex flex-col">
                             <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
@@ -356,7 +418,7 @@ function Dashboard() {
                             </h1>
 
                             <div className="mb-12 mt-2 flex items-center gap-3">
-                            <input
+                                <input
                                     type="text"
                                     id="note-element"
                                     className="flex-1 bg-gray-300 bg-opacity-15 text-gray-300 text-sm rounded-lg p-2 w-full"
@@ -374,7 +436,8 @@ function Dashboard() {
                             </div>
 
                             <div
-                                className="overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400" style={{ height: 'calc(100vh - 365px)' }}>
+                                className="overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400"
+                                style={{height: 'calc(100vh - 365px)'}}>
                                 {notes.length === 0 ? (
                                     <p className="text-gray-400 text-center mt-20">No notes available.</p>
                                 ) : (
