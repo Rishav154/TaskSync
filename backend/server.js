@@ -15,18 +15,34 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors({
     origin: [
-        'https://task-sync-frontend-omega.vercel.app',
-        'http://localhost:5173' // For local development
+        'https://task-sync-frontend-omega.vercel.app',  // Your deployed frontend URL
+        'http://localhost:5173'  // For local development
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400  // 24 hours
 }));
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: 'Something broke!',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
+    });
+});
+
 // CONNECT TO MONGODB
-mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("Connected to Database"))
-    .catch((err) => console.error("Failed to connect to Database:", err));
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // 5 seconds timeout
+    socketTimeoutMS: 45000, // 45 seconds timeout
+}).then(() => {
+    console.log("Connected to Database");
+}).catch((err) => {
+    console.error("Failed to connect to Database:", err);
+});
 
 // Verify Token Middleware
 const verifyToken = (req, res, next) => {
@@ -58,6 +74,10 @@ const verifyToken = (req, res, next) => {
         res.status(401).send({ error: "Invalid Token" });
     }
 };
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 
 
 // Signup Route
