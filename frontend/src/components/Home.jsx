@@ -37,7 +37,7 @@ function Home() {
             </header>
 
             {/* Features Section */}
-            <section className="py-20 px-8 bg-zinc-800">
+            <section className="py-20 px-8 bg-zinc-900">
                 <h2 className="text-4xl font-extrabold text-center text-gray-500 mb-16">
                     Why Choose{" "}
                     <span className="text-white font-majorMono">TaskSync</span>?
@@ -103,7 +103,7 @@ function Home() {
                 </div>
             </section>
 
-            <section className="bg-zinc-700 py-14 text-center">
+            <section className="bg-zinc-800 py-14 text-center">
                 <h2 className="text-4xl font-bold text-white mb-6 animate-fadeIn">
                     Ready to Get Started?
                 </h2>
@@ -118,7 +118,6 @@ function Home() {
                 </Link>
             </section>
 
-            {/* Contact Me Section */}
             {/* Contact Me Section */}
             <section className="bg-zinc-900 py-12 px-6">
                 <div className="max-w-3xl mx-auto text-center">
