@@ -38,7 +38,7 @@ function Signup() {
             // Wait for a short moment before redirecting
             setTimeout(() => {
                 navigate('/login');
-            }, 1500);
+            }, 100);
         } catch (error) {
             setMessage(`Error registering user. ${error}`);
         } finally {

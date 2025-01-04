@@ -15,8 +15,8 @@ function Login() {
     const BackendBaseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     useEffect(() => {
-        const savedUsername = localStorage.getItem("username");
-        const savedToken = localStorage.getItem("token");
+        const savedUsername = localStorage.getItem("username") || sessionStorage.getItem("username");
+        const savedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
 
         if (savedUsername) {
             setUsername(savedUsername);
