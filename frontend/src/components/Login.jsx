@@ -15,10 +15,9 @@ function Login() {
     const BackendBaseURL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-        if (token) {
-            navigate("/dashboard", { replace: true });
-        }
+        // Clear any existing tokens on mount
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
     }, []);
 
     const handleLogin = async (e) => {
@@ -48,6 +47,10 @@ function Login() {
 
             const { token } = response.data;
 
+            // Clear any existing tokens before setting new ones
+            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
+
             if (rememberMe) {
                 localStorage.setItem("token", token);
                 localStorage.setItem("username", username);
@@ -64,7 +67,6 @@ function Login() {
             if (err.message === "API URL not configured") {
                 setError("Server configuration error. Please contact support.");
             } else if (err.response?.data?.error) {
-                // This matches your backend's error format exactly
                 setError(err.response.data.error);
             } else {
                 setError("Login failed. Please try again.");
