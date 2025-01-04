@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 app.use(cors({
     origin: [
         'https://task-sync-frontend-omega.vercel.app',  // Your deployed frontend URL
+        'https://task-sync-frontend-rishavs-projects-4bdcd365.vercel.app',
         'http://localhost:5173'  // For local development
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -104,7 +105,7 @@ app.post("/api/signup", async (req, res) => {
     }
 });
 
-// Login Route
+
 // Login Route
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
