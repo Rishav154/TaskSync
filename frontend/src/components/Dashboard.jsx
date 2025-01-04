@@ -216,7 +216,7 @@ function Dashboard() {
             {/* Navbar */}
             <div className="bg-zinc-800 bg-opacity-75 py-2 px-6 flex justify-between items-center rounded-lg p-6 border border-zinc-500 ml-6 mr-6">
                 {/* Username */}
-                <div className="text-white text-lg font-bold font-majorMono">{username}</div>
+                <div className="text-white text-lg font-bold font-majorMono">Hello {username} !</div>
 
                 {/* Navigation Links */}
                 <div className="flex items-center space-x-8 font-majorMono">
