@@ -1,5 +1,6 @@
-import background from "../assets/homeBg.webp";
 import { Link } from "react-router-dom";
+import { GithubIcon, LinkedinIcon, Mail } from 'lucide-react';
+import background from "../assets/homeBg.webp";
 
 function Home() {
     return (
@@ -37,12 +38,22 @@ function Home() {
 
             {/* Features Section */}
             <section className="py-20 px-8 bg-zinc-800">
-                <h2 className="text-4xl font-extrabold text-center text-gray-500 mb-12">
+                <h2 className="text-4xl font-extrabold text-center text-gray-500 mb-16">
                     Why Choose{" "}
                     <span className="text-white font-majorMono">TaskSync</span>?
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto">
-                    <div className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                        <h3 className="text-2xl font-semibold mb-4 text-white">
+                            Modern and Sleek Design
+                        </h3>
+                        <p className="text-gray-400">
+                            Experience a clean, user-friendly interface crafted for simplicity and elegance.
+                        </p>
+                    </div>
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
                         <h3 className="text-2xl font-semibold mb-4 text-white">
                             Effortless Organization
                         </h3>
@@ -51,7 +62,8 @@ function Home() {
                             interface designed for simplicity and productivity.
                         </p>
                     </div>
-                    <div className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
                         <h3 className="text-2xl font-semibold mb-4 text-white">
                             Real-Time Sync
                         </h3>
@@ -60,13 +72,32 @@ function Home() {
                             all your devices.
                         </p>
                     </div>
-                    <div className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
                         <h3 className="text-2xl font-semibold mb-4 text-white">
-                            Smart Reminders
+                            Utmost Security
                         </h3>
                         <p className="text-gray-400">
-                            Keep on track with reminders tailored to your
-                            schedule and preferences.
+                            Your data is completely secure with us. All passwords are stored using secure hashing
+                            methods to ensure maximum protection.
+                        </p>
+                    </div>
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                        <h3 className="text-2xl font-semibold mb-4 text-white">
+                            Effortless Management
+                        </h3>
+                        <p className="text-gray-400">
+                            Easily mark your tasks as active or completed with just a click.
+                        </p>
+                    </div>
+                    <div
+                        className="bg-zinc-600 p-8 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+                        <h3 className="text-2xl font-semibold mb-4 text-white">
+                            Editable Notes
+                        </h3>
+                        <p className="text-gray-400">
+                            Simply double-click on a note to make quick edits effortlessly.
                         </p>
                     </div>
                 </div>
@@ -87,6 +118,54 @@ function Home() {
                 </Link>
             </section>
 
+            {/* Contact Me Section */}
+            {/* Contact Me Section */}
+            <section className="bg-zinc-900 py-12 px-6">
+                <div className="max-w-3xl mx-auto text-center">
+                    <h2 className="text-3xl font-bold text-white mb-4">
+                        Get in Touch
+                    </h2>
+                    <p className="text-md text-gray-400 mb-8">
+                        Whether you have questions, feedback, or just want to say hi (｡♥‿♥｡), I'm here to connect!
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <a
+                            href="https://github.com/Rishav154"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col items-center bg-zinc-800 py-5 px-4 rounded-lg shadow-lg hover:bg-zinc-700 transition-all"
+                        >
+                            <GithubIcon size={32} className="text-gray-300 group-hover:text-white mb-3" />
+                            <h3 className="text-lg font-medium text-gray-300 group-hover:text-white">
+                                GitHub
+                            </h3>
+                        </a>
+                        <a
+                            href="https://www.linkedin.com/in/rishav-prasad-1b7b80259/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col items-center bg-zinc-800 py-5 px-4 rounded-lg shadow-lg hover:bg-zinc-700 transition-all"
+                        >
+                            <LinkedinIcon size={32} className="text-blue-500 group-hover:text-white mb-3" />
+                            <h3 className="text-lg font-medium text-gray-300 group-hover:text-white">
+                                LinkedIn
+                            </h3>
+                        </a>
+                        <a
+                            href="mailto:rishav15045@gmail.com"
+                            className="group flex flex-col items-center bg-zinc-800 py-5 px-4 rounded-lg shadow-lg hover:bg-zinc-700 transition-all"
+                        >
+                            <Mail size={32} className="text-red-500 group-hover:text-white mb-3" />
+                            <h3 className="text-lg font-medium text-gray-300 group-hover:text-white">
+                                Email
+                            </h3>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+
+
             {/* Footer Section */}
             <footer className="bg-zinc-800 py-3 text-center">
                 <div className="text-gray-400 text-sm">
@@ -106,3 +185,4 @@ function Home() {
 }
 
 export default Home;
+
