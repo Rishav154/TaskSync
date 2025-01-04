@@ -1,4 +1,4 @@
-import background from "../assets/homeBg.jpg";
+import background from "../assets/homeBg.webp";
 import { Link } from "react-router-dom";
 
 function Home() {

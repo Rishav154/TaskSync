@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useEffect } from 'react';
 import axios from 'axios';
-import background from "../assets/dashboardBg.png";
+import background from "../assets/dashboardBg.webp";
 import {useNavigate} from "react-router-dom"
 
 

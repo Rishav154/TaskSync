@@ -1,4 +1,4 @@
-import background from "../assets/loginBg.jpg";
+import background from "../assets/loginBg.webp";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
