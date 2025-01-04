@@ -1,7 +1,7 @@
 import background from "../assets/loginBg.jpg";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 
@@ -10,13 +10,37 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
+
+    const BackendBaseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+    useEffect(() => {
+        const savedUsername = localStorage.getItem("username");
+        const savedToken = localStorage.getItem("token");
+
+        if (savedUsername) {
+            setUsername(savedUsername);
+        }
+
+        // Optional: Redirect if already logged in
+        if (savedToken) {
+            navigate("/dashboard");
+        }
+    }, []);
+
+    // const handleLogout = () => {
+    //     localStorage.removeItem("token");
+    //     localStorage.removeItem("username"); // Optional
+    //     sessionStorage.removeItem("token");
+    //     navigate("/login");
+    // };
 
     const handleLogin = async (e) => {
         e.preventDefault(); // Prevent the form from refreshing the page
 
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/login`,
+                `${BackendBaseURL}/api/login`,
                 {
                     username,
                     password,
@@ -24,7 +48,12 @@ function Login() {
             );
 
             const { token } = response.data;
-            localStorage.setItem("token", token);
+            if (rememberMe) {
+                localStorage.setItem("token", token); // Persistent storage
+                localStorage.setItem("username", username); // Optional: To pre-fill username
+            } else {
+                sessionStorage.setItem("token", token); // Temporary storage
+            }
             navigate("/dashboard");
 
         } catch (err) {
@@ -96,7 +125,8 @@ function Login() {
                                 <input
                                     id="remember"
                                     type="checkbox"
-                                    defaultValue=""
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
                                     className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
                                     required=""
                                 />

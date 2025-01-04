@@ -1,8 +1,7 @@
 import background from "../assets/loginBg.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-
 
 function Signup() {
     const [username, setUsername] = useState("");
@@ -10,6 +9,8 @@ function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
     const [acceptTerms, setAcceptTerms] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,6 +25,7 @@ function Signup() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/api/signup`,
@@ -33,8 +35,14 @@ function Signup() {
                 }
             );
             setMessage(response.data.message);
+            // Wait for a short moment before redirecting
+            setTimeout(() => {
+                navigate('/login');
+            }, 1500);
         } catch (error) {
             setMessage(`Error registering user. ${error}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -141,9 +149,12 @@ function Signup() {
                         </div>
                         <button
                             type="submit"
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full"
+                            disabled={isLoading}
+                            className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full ${
+                                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                         >
-                            Register
+                            {isLoading ? 'Registering...' : 'Register'}
                         </button>
                         <div className="text-sm font-medium text-gray-300 text-center mt-5">
                             <p className="inline">Already have an account? </p>

@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cors({
     origin: [
         'https://task-sync-frontend-omega.vercel.app',
-        'http://localhost:3000' // For local development
+        'http://localhost:5173' // For local development
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
@@ -199,6 +199,24 @@ app.post('/api/notes', verifyToken, async (req, res) => {
         res.status(201).send(note);
     } catch (error) {
         res.status(500).send({ error: "Failed to create note" });
+    }
+});
+
+app.put('/api/notes/:id', verifyToken, async (req, res) => {
+    const { id } = req.params;
+    const { text } = req.body;
+    try {
+        const updatedNote = await Note.findByIdAndUpdate(
+            id,
+            { text },
+            { new: true }
+        );
+        if (!updatedNote) {
+            return res.status(404).send({ error: "Note not found" });
+        }
+        res.status(200).send(updatedNote);
+    } catch (error) {
+        res.status(500).send({ error: "Failed to update note" });
     }
 });
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useEffect } from 'react';
 import axios from 'axios';
 import background from "../assets/dashboardBg.png";
+import {useNavigate} from "react-router-dom"
 
 
 function Dashboard() {
@@ -10,12 +11,16 @@ function Dashboard() {
     const [input, setInput] = useState("");
     const [notes, setNotes] = useState([]);
     const [noteInput, setNoteInput] = useState("");
+    const navigate = useNavigate();
 
     // Fetch data on load
     useEffect(() => {
         const fetchTodosAndNotes = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+                if (!token) {
+                    navigate("/login");
+                }
                 const headers = { Authorization: token };
 
                 const [todosResponse, notesResponse] = await Promise.all([
@@ -28,11 +33,17 @@ function Dashboard() {
                 setNotes(notesResponse.data);
             } catch (error) {
                 console.error("Failed to fetch todos/notes", error);
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem("token");
+                    sessionStorage.removeItem("token");
+                    navigate("/login");
+                }
             }
         };
 
         fetchTodosAndNotes();
     }, []);
+
 
     const handleSubmit = async () => {
         if (input.trim()) {
@@ -146,10 +157,28 @@ function Dashboard() {
         }
     };
 
-    const editNote = (_id, newText) => {  // Changed parameter to _id
-        setNotes((notes) =>
-            notes.map((note) => (note._id === _id ? { ...note, text: newText } : note))  // Changed to _id
-        );
+    const editNote = async (_id, newText) => {
+        try {
+            const token = localStorage.getItem('token');
+            const headers = { Authorization: token };
+
+            const response = await axios.put(
+                `${import.meta.env.VITE_API_URL}/api/notes/${_id}`,
+                { text: newText },
+                { headers }
+            );
+
+            setNotes((notes) =>
+                notes.map((note) => (note._id === _id ? response.data : note))
+            );
+        } catch (error) {
+            console.error("Failed to update note", error);
+            // Revert the change in UI if the update fails
+            setNotes((notes) =>
+                notes.map((note) => note)
+            );
+            alert("Failed to update note. Please try again.");
+        }
     };
 
     return (
@@ -303,9 +332,11 @@ function Dashboard() {
                                                 e.target.contentEditable = true;
                                                 e.target.focus();
                                             }}
-                                            onBlur={(e) => {
+                                            onBlur={async (e) => {
                                                 e.target.contentEditable = false;
-                                                editNote(_id, e.target.textContent);
+                                                if (e.target.textContent !== text) {
+                                                    await editNote(_id, e.target.textContent);
+                                                }
                                             }}
                                         >
                                             {text}
