@@ -41,6 +41,11 @@ function Login() {
                 }
             );
 
+            // Check if response.data contains a token
+            if (!response.data?.token) {
+                throw new Error("Invalid response from server");
+            }
+
             const { token } = response.data;
 
             if (rememberMe) {
@@ -54,10 +59,15 @@ function Login() {
 
         } catch (err) {
             console.error("Login error:", err);
+
+            // Handle different error scenarios
             if (err.message === "API URL not configured") {
                 setError("Server configuration error. Please contact support.");
+            } else if (err.response?.data?.error) {
+                // This matches your backend's error format exactly
+                setError(err.response.data.error);
             } else {
-                setError(err.response?.data?.error || "Login failed. Please try again.");
+                setError("Login failed. Please try again.");
             }
         } finally {
             setIsLoading(false);
