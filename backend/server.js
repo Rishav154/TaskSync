@@ -105,18 +105,19 @@ app.post("/api/signup", async (req, res) => {
 });
 
 // Login Route
+// Login Route
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(400).send({ error: "User not found" });
+            return res.status(400).json({ error: "User not found" });
         }
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return res.status(400).send({ error: "Invalid password" });
+            return res.status(400).json({ error: "Invalid password" });
         }
 
         const token = jwt.sign(
@@ -125,10 +126,10 @@ app.post("/api/login", async (req, res) => {
             { expiresIn: "1h" }
         );
 
-        res.status(200).send({ token });
+        res.status(200).json({ token });
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).send({ error: "Server error" });
+        res.status(500).json({ error: "Server error" });
     }
 });
 

@@ -63,14 +63,18 @@ function Login() {
         } catch (err) {
             console.error("Login error:", err);
 
-            // Handle different error scenarios
+            // Modified error handling
+            let errorMessage = "Login failed. Please try again.";
+
             if (err.message === "API URL not configured") {
-                setError("Server configuration error. Please contact support.");
+                errorMessage = "Server configuration error. Please contact support.";
             } else if (err.response?.data?.error) {
-                setError(err.response.data.error);
-            } else {
-                setError("Login failed. Please try again.");
+                errorMessage = err.response.data.error;
+            } else if (err.message) {
+                errorMessage = err.message;
             }
+
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
