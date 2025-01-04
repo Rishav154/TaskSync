@@ -47,24 +47,22 @@ function Login() {
                 }
             );
 
+            // Destructure token directly from response.data
             const { token } = response.data;
             const tokenWithBearer = `Bearer ${token}`;
 
             if (rememberMe) {
-                // Store in localStorage for persistent storage
                 localStorage.setItem("token", tokenWithBearer);
                 localStorage.setItem("username", username);
             } else {
-                // Store in sessionStorage for temporary storage
                 sessionStorage.setItem("token", tokenWithBearer);
-                // Don't store username in sessionStorage since we don't need to remember it
             }
 
             navigate("/dashboard");
 
         } catch (err) {
-            console.error("Login error:", err.response?.data || err.message);
-            setError("Invalid credentials. Please try again.");
+            console.error("Login error:", err.response?.data?.error || err.message);
+            setError(err.response?.data?.error || "Invalid credentials. Please try again.");
         }
     };
 

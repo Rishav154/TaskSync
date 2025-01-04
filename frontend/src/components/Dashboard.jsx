@@ -49,8 +49,8 @@ function Dashboard() {
     const handleSubmit = async () => {
         if (input.trim()) {
             try {
-                const token = localStorage.getItem('token');
-                const headers = { Authorization: token };
+                const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+                const headers = { Authorization: `Bearer ${token}` };
 
                 const response = await axios.post(
                     `${import.meta.env.VITE_API_URL}/api/todos`,
@@ -68,8 +68,8 @@ function Dashboard() {
 
     const removeTodo = async (_id) => {
         try {
-            const token = localStorage.getItem('token');
-            const headers = { Authorization: token };
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
             const todoToRemove = todos.find((t) => t._id === _id);
             if (!todoToRemove) {
@@ -94,8 +94,8 @@ function Dashboard() {
 
     const restoreTodo = async (_id) => {
         try {
-            const token = localStorage.getItem('token');
-            const headers = { Authorization: token };
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
             const response = await axios.put(
                 `${import.meta.env.VITE_API_URL}/api/todos/${_id}/restore`,
@@ -113,8 +113,8 @@ function Dashboard() {
 
     const removePermanently = async (_id) => {
         try {
-            const token = localStorage.getItem('token');
-            const headers = { Authorization: token };
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/todos/${_id}`, { headers });
             setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
@@ -127,8 +127,8 @@ function Dashboard() {
     const addNote = async () => {
         if (noteInput.trim()) {
             try {
-                const token = localStorage.getItem('token');
-                const headers = { Authorization: token };
+                const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+                const headers = { Authorization: `Bearer ${token}` };
 
                 const response = await axios.post(
                     `${import.meta.env.VITE_API_URL}/api/notes`,
@@ -146,8 +146,8 @@ function Dashboard() {
 
     const deleteNote = async (_id) => {  // Changed parameter to _id
         try {
-            const token = localStorage.getItem('token');
-            const headers = { Authorization: token };
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/notes/${_id}`, { headers });  // Changed to _id
 
@@ -160,8 +160,8 @@ function Dashboard() {
 
     const editNote = async (_id, newText) => {
         try {
-            const token = localStorage.getItem('token');
-            const headers = { Authorization: token };
+            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
             const response = await axios.put(
                 `${import.meta.env.VITE_API_URL}/api/notes/${_id}`,
