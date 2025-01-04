@@ -18,10 +18,11 @@ function Dashboard() {
         const fetchTodosAndNotes = async () => {
             try {
                 const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
                 if (!token) {
                     navigate("/login");
                 }
-                const headers = { Authorization: token };
+                const headers = { Authorization: `Bearer ${token}` };
 
                 const [todosResponse, notesResponse] = await Promise.all([
                     axios.get(`${import.meta.env.VITE_API_URL}/api/todos`, { headers }),

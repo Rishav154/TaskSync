@@ -30,13 +30,15 @@ mongoose
 
 // Verify Token Middleware
 const verifyToken = (req, res, next) => {
-    const token = req.header("Authorization");
+    const authHeader = req.header("Authorization");
 
-    if (!token) {
+    if (!authHeader) {
         return res.status(401).send({ error: "Access Denied" });
     }
 
     try {
+        // Remove 'Bearer ' from the header to get just the token
+        const token = authHeader.replace('Bearer ', '');
         req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
     } catch (err) {
