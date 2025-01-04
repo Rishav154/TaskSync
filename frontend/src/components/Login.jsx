@@ -1,9 +1,8 @@
 import background from "../assets/loginBg.jpg";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-
 
 function Login() {
     const navigate = useNavigate();
@@ -13,31 +12,27 @@ function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const BackendBaseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const BackendBaseURL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         const token = localStorage.getItem("token") || sessionStorage.getItem("token");
         if (token) {
-            navigate("/dashboard", { replace: true }); // Use replace to prevent navigation history
+            navigate("/dashboard", { replace: true });
         }
     }, []);
 
-    // const handleLogout = () => {
-    //     localStorage.removeItem("token");
-    //     localStorage.removeItem("username"); // Optional
-    //     sessionStorage.removeItem("token");
-    //     navigate("/login");
-    // };
-
-// In Login.js, replace your existing handleLogin function with this:
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (isLoading) return; // Prevent multiple submissions
+        if (isLoading) return;
 
         setIsLoading(true);
         setError("");
 
         try {
+            if (!BackendBaseURL) {
+                throw new Error("API URL not configured");
+            }
+
             const response = await axios.post(
                 `${BackendBaseURL}/api/login`,
                 {
@@ -55,10 +50,15 @@ function Login() {
                 sessionStorage.setItem("token", token);
             }
 
-            navigate("/dashboard", { replace: true }); // Use replace to prevent navigation history
+            navigate("/dashboard", { replace: true });
 
         } catch (err) {
-            setError(err.response?.data?.error || "Login failed. Please try again.");
+            console.error("Login error:", err);
+            if (err.message === "API URL not configured") {
+                setError("Server configuration error. Please contact support.");
+            } else {
+                setError(err.response?.data?.error || "Login failed. Please try again.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -101,6 +101,7 @@ function Login() {
                                 id="username"
                                 className="shadow-sm bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                 placeholder="Enter username"
+                                value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
                             />
@@ -130,7 +131,6 @@ function Login() {
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
                                     className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-                                    required=""
                                 />
                             </div>
                             <label
@@ -143,9 +143,12 @@ function Login() {
 
                         <button
                             type="submit"
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full"
+                            disabled={isLoading}
+                            className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full ${
+                                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
                         >
-                            Login
+                            {isLoading ? 'Logging in...' : 'Login'}
                         </button>
                         <div className="text-sm font-medium text-gray-300 text-center mt-5">
                             <p className="inline">
@@ -160,7 +163,7 @@ function Login() {
                         </div>
                     </form>
                     {error && (
-                        <div className="text-gray-400 text-center mt-4">
+                        <div className="text-red-400 text-center mt-4">
                             {error}
                         </div>
                     )}
