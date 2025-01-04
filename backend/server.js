@@ -33,16 +33,29 @@ const verifyToken = (req, res, next) => {
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
-        return res.status(401).send({ error: "Access Denied" });
+        return res.status(401).send({ error: "Access Denied - No token provided" });
     }
 
     try {
-        // Remove 'Bearer ' from the header to get just the token
-        const token = authHeader.replace('Bearer ', '');
-        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        // Make sure we're dealing with a Bearer token
+        if (!authHeader.startsWith('Bearer ')) {
+            return res.status(401).send({ error: "Invalid token format" });
+        }
+
+        // Extract the token
+        const token = authHeader.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).send({ error: "Access Denied - Token not found" });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
         next();
     } catch (err) {
-        res.status(400).send({ error: "Invalid Token" });
+        console.error('Token verification error:', err);
+        res.status(401).send({ error: "Invalid Token" });
     }
 };
 

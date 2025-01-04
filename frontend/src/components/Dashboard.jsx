@@ -4,6 +4,14 @@ import axios from 'axios';
 import background from "../assets/dashboardBg.png";
 import {useNavigate} from "react-router-dom"
 
+const getAuthHeaders = () => {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    return {
+        headers: {
+            Authorization: token ? `Bearer ${token}` : null
+        }
+    };
+};
 
 function Dashboard() {
     const [todos, setTodos] = useState([]);
@@ -21,12 +29,12 @@ function Dashboard() {
 
                 if (!token) {
                     navigate("/login");
+                    return;
                 }
-                const headers = { Authorization: `Bearer ${token}` };
 
                 const [todosResponse, notesResponse] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/todos`, { headers }),
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/notes`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/todos`, getAuthHeaders()),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/notes`, getAuthHeaders()),
                 ]);
 
                 setTodos(todosResponse.data.active);
@@ -49,38 +57,29 @@ function Dashboard() {
     const handleSubmit = async () => {
         if (input.trim()) {
             try {
-                const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-                const headers = { Authorization: `Bearer ${token}` };
-
                 const response = await axios.post(
                     `${import.meta.env.VITE_API_URL}/api/todos`,
                     { text: input.trim() },
-                    { headers }
+                    getAuthHeaders()
                 );
 
                 setTodos((todos) => [...todos, response.data]);
                 setInput("");
             } catch (error) {
                 console.error("Failed to create todo", error);
+                if (error.response?.status === 401) {
+                    navigate("/login");
+                }
             }
         }
     };
 
     const removeTodo = async (_id) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            const todoToRemove = todos.find((t) => t._id === _id);
-            if (!todoToRemove) {
-                console.error("Todo not found");
-                return;
-            }
-
             const response = await axios.put(
                 `${import.meta.env.VITE_API_URL}/api/todos/${_id}/complete`,
                 {},
-                { headers }
+                getAuthHeaders()
             );
 
             setTodos((todos) => todos.filter((t) => t._id !== _id));
@@ -94,29 +93,25 @@ function Dashboard() {
 
     const restoreTodo = async (_id) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
             const response = await axios.put(
                 `${import.meta.env.VITE_API_URL}/api/todos/${_id}/restore`,
                 {},
-                { headers }
+                getAuthHeaders()
             );
 
             setTodos((todos) => [...todos, response.data]);
             setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
         } catch (error) {
             console.error("Failed to restore todo", error);
-            alert("Failed to restore todo. Please try again.");
         }
     };
 
     const removePermanently = async (_id) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/todos/${_id}`, { headers });
+            await axios.delete(
+                `${import.meta.env.VITE_API_URL}/api/todos/${_id}`,
+                getAuthHeaders()
+            );
             setRemovedTodos((removedTodos) => removedTodos.filter((t) => t._id !== _id));
         } catch (error) {
             console.error("Failed to permanently remove todo", error);
@@ -127,13 +122,10 @@ function Dashboard() {
     const addNote = async () => {
         if (noteInput.trim()) {
             try {
-                const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-                const headers = { Authorization: `Bearer ${token}` };
-
                 const response = await axios.post(
                     `${import.meta.env.VITE_API_URL}/api/notes`,
                     { text: noteInput.trim() },
-                    { headers }
+                    getAuthHeaders()
                 );
 
                 setNotes((notes) => [...notes, response.data]);
@@ -144,29 +136,24 @@ function Dashboard() {
         }
     };
 
-    const deleteNote = async (_id) => {  // Changed parameter to _id
+    const deleteNote = async (_id) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/notes/${_id}`, { headers });  // Changed to _id
-
-            setNotes(notes => notes.filter(note => note._id !== _id));  // Changed to _id
+            await axios.delete(
+                `${import.meta.env.VITE_API_URL}/api/notes/${_id}`,
+                getAuthHeaders()
+            );
+            setNotes(notes => notes.filter(note => note._id !== _id));
         } catch (error) {
             console.error("Failed to delete note", error);
-            alert("Failed to delete note. Please try again.");
         }
     };
 
     const editNote = async (_id, newText) => {
         try {
-            const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
             const response = await axios.put(
                 `${import.meta.env.VITE_API_URL}/api/notes/${_id}`,
                 { text: newText },
-                { headers }
+                getAuthHeaders()
             );
 
             setNotes((notes) =>
@@ -174,11 +161,6 @@ function Dashboard() {
             );
         } catch (error) {
             console.error("Failed to update note", error);
-            // Revert the change in UI if the update fails
-            setNotes((notes) =>
-                notes.map((note) => note)
-            );
-            alert("Failed to update note. Please try again.");
         }
     };
 

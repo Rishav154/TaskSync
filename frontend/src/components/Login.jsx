@@ -35,6 +35,7 @@ function Login() {
     //     navigate("/login");
     // };
 
+// In Login.js, replace your existing handleLogin function with this:
     const handleLogin = async (e) => {
         e.preventDefault();
 
@@ -47,15 +48,14 @@ function Login() {
                 }
             );
 
-            // Destructure token directly from response.data
+            // Store just the token without 'Bearer '
             const { token } = response.data;
-            const tokenWithBearer = `Bearer ${token}`;
 
             if (rememberMe) {
-                localStorage.setItem("token", tokenWithBearer);
+                localStorage.setItem("token", token);
                 localStorage.setItem("username", username);
             } else {
-                sessionStorage.setItem("token", tokenWithBearer);
+                sessionStorage.setItem("token", token);
             }
 
             navigate("/dashboard");
