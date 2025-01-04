@@ -4,14 +4,6 @@ import axios from 'axios';
 import background from "../assets/dashboardBg.png";
 import {useNavigate} from "react-router-dom"
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    return {
-        headers: {
-            Authorization: token ? `Bearer ${token}` : null
-        }
-    };
-};
 
 function Dashboard() {
     const [todos, setTodos] = useState([]);
@@ -19,16 +11,29 @@ function Dashboard() {
     const [input, setInput] = useState("");
     const [notes, setNotes] = useState([]);
     const [noteInput, setNoteInput] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        return {
+            headers: {
+                Authorization: token ? `Bearer ${token}` : null
+            }
+        };
+    };
 
     // Fetch data on load
     useEffect(() => {
+        let isMounted = true;
+
         const fetchTodosAndNotes = async () => {
             try {
                 const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
                 if (!token) {
-                    navigate("/login");
+                    navigate("/login", { replace: true });
                     return;
                 }
 
@@ -37,21 +42,49 @@ function Dashboard() {
                     axios.get(`${import.meta.env.VITE_API_URL}/api/notes`, getAuthHeaders()),
                 ]);
 
-                setTodos(todosResponse.data.active);
-                setRemovedTodos(todosResponse.data.completed);
-                setNotes(notesResponse.data);
+                if (isMounted) {
+                    setTodos(todosResponse.data.active);
+                    setRemovedTodos(todosResponse.data.completed);
+                    setNotes(notesResponse.data);
+                    setIsLoading(false);
+                }
             } catch (error) {
-                console.error("Failed to fetch todos/notes", error);
-                if (error.response && error.response.status === 401) {
-                    localStorage.removeItem("token");
-                    sessionStorage.removeItem("token");
-                    navigate("/login");
+                if (isMounted) {
+                    console.error("Failed to fetch todos/notes", error);
+                    setError("Failed to load data");
+                    setIsLoading(false);
+
+                    if (error.response?.status === 401) {
+                        localStorage.removeItem("token");
+                        sessionStorage.removeItem("token");
+                        navigate("/login", { replace: true });
+                    }
                 }
             }
         };
-
         fetchTodosAndNotes();
-    }, []);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [navigate]);
+
+    if (isLoading) {
+        return (
+            <div className="h-screen flex justify-center items-center">
+                <div className="text-white">Loading...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="h-screen flex justify-center items-center">
+                <div className="text-white">{error}</div>
+            </div>
+        );
+    }
+
 
 
     const handleSubmit = async () => {

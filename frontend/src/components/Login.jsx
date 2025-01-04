@@ -11,20 +11,14 @@ function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const BackendBaseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     useEffect(() => {
-        const savedUsername = localStorage.getItem("username") || sessionStorage.getItem("username");
-        const savedToken = localStorage.getItem("token") || sessionStorage.getItem("token");
-
-        if (savedUsername) {
-            setUsername(savedUsername);
-        }
-
-        // Optional: Redirect if already logged in
-        if (savedToken) {
-            navigate("/dashboard");
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (token) {
+            navigate("/dashboard", { replace: true }); // Use replace to prevent navigation history
         }
     }, []);
 
@@ -38,6 +32,10 @@ function Login() {
 // In Login.js, replace your existing handleLogin function with this:
     const handleLogin = async (e) => {
         e.preventDefault();
+        if (isLoading) return; // Prevent multiple submissions
+
+        setIsLoading(true);
+        setError("");
 
         try {
             const response = await axios.post(
@@ -48,7 +46,6 @@ function Login() {
                 }
             );
 
-            // Store just the token without 'Bearer '
             const { token } = response.data;
 
             if (rememberMe) {
@@ -58,11 +55,12 @@ function Login() {
                 sessionStorage.setItem("token", token);
             }
 
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true }); // Use replace to prevent navigation history
 
         } catch (err) {
-            console.error("Login error:", err.response?.data?.error || err.message);
-            setError(err.response?.data?.error || "Invalid credentials. Please try again.");
+            setError(err.response?.data?.error || "Login failed. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
