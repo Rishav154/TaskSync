@@ -36,7 +36,7 @@ function Login() {
     // };
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // Prevent the form from refreshing the page
+        e.preventDefault();
 
         try {
             const response = await axios.post(
@@ -48,17 +48,23 @@ function Login() {
             );
 
             const { token } = response.data;
+            const tokenWithBearer = `Bearer ${token}`;
+
             if (rememberMe) {
-                localStorage.setItem("token", token); // Persistent storage
-                localStorage.setItem("username", username); // Optional: To pre-fill username
+                // Store in localStorage for persistent storage
+                localStorage.setItem("token", tokenWithBearer);
+                localStorage.setItem("username", username);
             } else {
-                sessionStorage.setItem("token", token); // Temporary storage
+                // Store in sessionStorage for temporary storage
+                sessionStorage.setItem("token", tokenWithBearer);
+                // Don't store username in sessionStorage since we don't need to remember it
             }
+
             navigate("/dashboard");
 
         } catch (err) {
+            console.error("Login error:", err.response?.data || err.message);
             setError("Invalid credentials. Please try again.");
-            console.log(err);
         }
     };
 
