@@ -79,6 +79,11 @@ app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
 
+app.get('/api/user', verifyToken, (req, res) => {
+    res.status(200).send({ id: req.user.id, username: req.user.username });
+});
+
+
 
 // Signup Route
 app.post("/api/signup", async (req, res) => {
