@@ -208,177 +208,182 @@ function Dashboard() {
 
     return (
         <>
-            <div className="mb-6" style={{
+            <div className="min-h-screen" style={{
                 backgroundImage: `url(${background})`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
             }}>
-            {/* Navbar */}
-            <div className="bg-zinc-800 bg-opacity-75 py-2 px-6 flex justify-between items-center rounded-lg p-6 border border-zinc-500 ml-6 mr-6">
-                {/* Username */}
-                <div className="text-white text-lg font-bold font-majorMono">Hello {username} !</div>
-
-                {/* Navigation Links */}
-                <div className="flex items-center space-x-8 font-majorMono">
-                    <button
-                        onClick={() => navigate("/")}
-                        className="text-gray-300 hover:text-white text-sm"
-                    >
-                        Home
-                    </button>
-                    <button
-                        onClick={() => navigate("/signup")}
-                        className="text-gray-300 hover:text-white text-sm"
-                    >
-                        Switch Account
-                    </button>
-                    <button
-                        onClick={handleLogout}
-                        className="text-gray-300 hover:text-red-500 text-sm"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>
-
-            <div className=" flex justify-center items-center">
-                <div className="grid grid-cols-1 md:grid-cols-3 h-screen w-screen gap-6 p-6">
+                <div className="pt-4">
+                    {/* Navbar */}
                     <div
-                        className="col-span-2 bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500">
-                        <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
-                            To-Do List
-                        </h1>
+                        className="bg-zinc-800 bg-opacity-75 py-2 px-6 flex justify-between items-center rounded-lg p-6 border border-zinc-500 mx-6">
+                        <div className="text-white text-lg font-bold font-majorMono">Hello {username} !</div>
 
-                        {/* Input Section */}
-                        <div className="mb-10 mt-10 flex items-center gap-3">
-                            <input
-                                type="text"
-                                id="todo-element"
-                                className="flex-1 bg-gray-300 bg-opacity-15 text-gray-300 text-sm rounded-lg p-2 w-full sm:w-auto"
-                                placeholder="New todo"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                            />
+                        {/* Navigation Links */}
+                        <div className="flex items-center space-x-8 font-majorMono">
                             <button
-                                onClick={handleSubmit}
-                                className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
+                                onClick={() => navigate("/")}
+                                className="text-gray-300 hover:text-white text-sm"
                             >
-                                Add
+                                Home
+                            </button>
+                            <button
+                                onClick={() => navigate("/signup")}
+                                className="text-gray-300 hover:text-white text-sm"
+                            >
+                                Switch Account
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="text-gray-300 hover:text-red-500 text-sm"
+                            >
+                                Logout
                             </button>
                         </div>
+                    </div>
+                </div>
 
-                        <div className="flex space-x-6 h-[calc(100vh-300px)]">
-                            {/* Active To-Do List */}
-                            <div className="flex-1">
-                                <h2 className="text-xl text-white font-majorMono mb-4">Active Tasks</h2>
-                                <div
-                                    className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
-                                    <ul className="space-y-4 pr-2">
-                                        {todos.map(({text, _id}) => (
-                                            <li
-                                                className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
-                                                key={_id}
-                                            >
-                                                <span className="text-white text-sm break-words mr-4">{text}</span>
-                                                <button
-                                                    onClick={() => removeTodo(_id)}
-                                                    className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
+                <div className="flex justify-center items-start">
+                    <div className="grid grid-cols-1 md:grid-cols-3 w-screen gap-6 p-6 pt-4">
+                        <div
+                            className="col-span-2 bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500">
+                            <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
+                                To-Do List
+                            </h1>
+
+                            {/* Input Section */}
+                            <div className="mb-6 mt-6 flex items-center gap-3">
+                                <input
+                                    type="text"
+                                    id="todo-element"
+                                    className="flex-1 bg-gray-300 bg-opacity-15 text-gray-300 text-sm rounded-lg p-2 w-full sm:w-auto"
+                                    placeholder="New todo"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                                />
+                                <button
+                                    onClick={handleSubmit}
+                                    className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
+                                >
+                                    Add
+                                </button>
+                            </div>
+
+                            <div className="flex space-x-6" style={{height: 'calc(100vh -365px)'}}>
+
+                                {/* Active To-Do List */}
+                                <div className="flex-1">
+                                    <h2 className="text-xl text-white font-majorMono mb-4">Active Tasks</h2>
+                                    <div
+                                        className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                                        <ul className="space-y-4 pr-2">
+                                            {todos.map(({text, _id}) => (
+                                                <li
+                                                    className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
+                                                    key={_id}
                                                 >
-                                                    Remove
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    {todos.length === 0 && (
-                                        <p className="text-gray-400 text-center mt-10">
-                                            No active tasks yet. Add a new task to get started!
-                                        </p>
-                                    )}
+                                                    <span className="text-white text-sm break-words mr-4">{text}</span>
+                                                    <button
+                                                        onClick={() => removeTodo(_id)}
+                                                        className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {todos.length === 0 && (
+                                            <p className="text-gray-400 text-center mt-10">
+                                                No active tasks yet. Add a new task to get started!
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Separator Line */}
-                            <div className="px-2">
-                                <div className="border-l-2 border-gray-400 h-full"></div>
-                            </div>
+                                {/* Separator Line */}
+                                <div className="px-2">
+                                    <div className="border-l-2 border-gray-400 h-full"></div>
+                                </div>
 
-                            {/* Removed To-Do List */}
-                            <div className="flex-1">
-                                <h2 className="text-xl text-white font-majorMono mb-4">Completed Tasks</h2>
-                                <div className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
-                                    <ul className="space-y-4 pr-2">
-                                        {removedTodos.map(({text, _id}) => (
-                                            <li
-                                                className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
-                                                key={_id}
-                                            >
+                                {/* Removed To-Do List */}
+                                <div className="flex-1">
+                                    <h2 className="text-xl text-white font-majorMono mb-4">Completed Tasks</h2>
+                                    <div
+                                        className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                                        <ul className="space-y-4 pr-2">
+                                            {removedTodos.map(({text, _id}) => (
+                                                <li
+                                                    className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
+                                                    key={_id}
+                                                >
                                                 <span className="text-white text-sm break-words line-through mr-4">
                                                     {text}
                                                 </span>
-                                                <div
-                                                    className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button
-                                                        onClick={() => restoreTodo(_id)}
-                                                        className="text-green-500 text-xs"
-                                                    >
-                                                        Restore
-                                                    </button>
-                                                    <div className="border-l-2 border-gray-400 h-6"></div>
-                                                    <button
-                                                        onClick={() => removePermanently(_id)}
-                                                        className="text-red-500 text-xs"
-                                                    >
-                                                        Remove Permanently
-                                                    </button>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    {removedTodos.length === 0 && (
-                                        <p className="text-gray-400 text-center mt-10">
-                                            No removed tasks yet.
-                                        </p>
-                                    )}
+                                                    <div
+                                                        className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <button
+                                                            onClick={() => restoreTodo(_id)}
+                                                            className="text-green-500 text-xs"
+                                                        >
+                                                            Restore
+                                                        </button>
+                                                        <div className="border-l-2 border-gray-400 h-6"></div>
+                                                        <button
+                                                            onClick={() => removePermanently(_id)}
+                                                            className="text-red-500 text-xs"
+                                                        >
+                                                            Remove Permanently
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {removedTodos.length === 0 && (
+                                            <p className="text-gray-400 text-center mt-10">
+                                                No removed tasks yet.
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div
-                        className="bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500 flex flex-col">
-                        <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
-                            Notes
-                        </h1>
+                        <div
+                            className="bg-zinc-600 bg-opacity-20 backdrop-blur-md rounded-lg p-6 border border-zinc-500 flex flex-col">
+                            <h1 className="text-2xl text-white text-center font-majorMono underline underline-offset-[10px] mb-4">
+                                Notes
+                            </h1>
 
-                        <div className="mb-12 mt-6 flex items-center gap-3">
+                            <div className="mb-12 mt-2 flex items-center gap-3">
                             <input
-                                type="text"
-                                id="note-element"
-                                className="flex-1 bg-gray-300 bg-opacity-15 text-gray-300 text-sm rounded-lg p-2 w-full"
-                                placeholder="Write a new note..."
-                                value={noteInput}
-                                onChange={(e) => setNoteInput(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && addNote()}
-                            />
-                            <button
-                                onClick={addNote}
-                                className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
-                            >
-                                Add
-                            </button>
-                        </div>
+                                    type="text"
+                                    id="note-element"
+                                    className="flex-1 bg-gray-300 bg-opacity-15 text-gray-300 text-sm rounded-lg p-2 w-full"
+                                    placeholder="Write a new note..."
+                                    value={noteInput}
+                                    onChange={(e) => setNoteInput(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && addNote()}
+                                />
+                                <button
+                                    onClick={addNote}
+                                    className="bg-gray-300 hover:bg-zinc-600 bg-opacity-15 text-white text-sm rounded-lg px-6 py-2"
+                                >
+                                    Add
+                                </button>
+                            </div>
 
-                        <div className="overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400 h-[580px]">
-                            {notes.length === 0 ? (
-                                <p className="text-gray-400 text-center mt-20">No notes available.</p>
-                            ) : (
-                                <ul className="space-y-4 pr-2">
-                                    {notes.map(({text, _id}) => (
-                                        <li
-                                            key={_id}
-                                            className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
-                                        >
+                            <div
+                                className="overflow-y-auto scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400" style={{ height: 'calc(100vh - 365px)' }}>
+                                {notes.length === 0 ? (
+                                    <p className="text-gray-400 text-center mt-20">No notes available.</p>
+                                ) : (
+                                    <ul className="space-y-4 pr-2">
+                                        {notes.map(({text, _id}) => (
+                                            <li
+                                                key={_id}
+                                                className="flex items-center justify-between bg-gray-300 bg-opacity-20 p-3 rounded-lg group"
+                                            >
                                             <span
                                                 className="text-white text-sm break-words mr-4 cursor-pointer"
                                                 contentEditable={false}
@@ -395,22 +400,22 @@ function Dashboard() {
                                             >
                                                 {text}
                                             </span>
-                                            <button
-                                                onClick={() => deleteNote(_id)}
-                                                className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
-                                            >
-                                                Delete
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                                                <button
+                                                    onClick={() => deleteNote(_id)}
+                                                    className="text-gray-300 hover:text-red-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-xs"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
-                </div>
         </>
     );
 }
