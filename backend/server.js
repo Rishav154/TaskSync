@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors({
     origin: [
-        'https://task-sync-frontend-omega.vercel.app',  // Your deployed frontend URL
+        'https://task-sync-omega.vercel.app',
         'https://task-sync-frontend-rishavs-projects-4bdcd365.vercel.app',
         'http://localhost:5173'  // For local development
     ],
