@@ -39,6 +39,7 @@ function Login() {
                 {
                     username,
                     password,
+                    rememberMe
                 }
             );
 

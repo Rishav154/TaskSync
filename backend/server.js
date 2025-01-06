@@ -108,7 +108,7 @@ app.post("/api/signup", async (req, res) => {
 
 // Login Route
 app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, rememberMe } = req.body;
 
     try {
         const user = await User.findOne({ username });
@@ -121,10 +121,13 @@ app.post("/api/login", async (req, res) => {
             return res.status(400).json({ error: "Invalid password" });
         }
 
+        // Set expiration to 30 days if rememberMe is true, otherwise 1 hour
+        const expiresIn = rememberMe ? "30d" : "1h";
+
         const token = jwt.sign(
             { id: user._id, username: user.username },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn }
         );
 
         res.status(200).json({ token });
