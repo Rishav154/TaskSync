@@ -14,8 +14,12 @@ function Login() {
     const BackendBaseURL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
-        localStorage.removeItem("token");
-        sessionStorage.removeItem("token");
+        // Only clear tokens if we don't have a valid one
+        const existingToken = localStorage.getItem("token") || sessionStorage.getItem("token");
+        if (!existingToken) {
+            localStorage.removeItem("token");
+            sessionStorage.removeItem("token");
+        }
     }, []);
 
     const handleLogin = async (e) => {
