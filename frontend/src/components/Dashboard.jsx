@@ -328,14 +328,12 @@ function Dashboard() {
                                 </button>
                             </div>
 
-                            <div className="flex space-x-6 md:space-x-6" style={{height: 'calc(100vh -365px)'}}>
+
+                            <div className="flex space-x-6 md:space-x-6 min-h-[400px]">
                                 {/* Active To-Do List */}
-                                <div
-                                    className={`flex-1 ${activeTab === "active" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
-                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Active
-                                        Tasks</h2>
-                                    <div
-                                        className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                                <div className={`flex-1 ${activeTab === "active" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
+                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Active Tasks</h2>
+                                    <div className="overflow-y-auto min-h-[300px] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                         <ul className="space-y-4 pr-2">
                                             {todos.map(({text, _id}) => (
                                                 <li
@@ -362,16 +360,13 @@ function Dashboard() {
 
                                 {/* Desktop Separator Line */}
                                 <div className="hidden md:block px-2">
-                                    <div className="border-l-2 border-gray-400 h-full"></div>
+                                <div className="border-l-2 border-gray-400 h-full"></div>
                                 </div>
 
                                 {/* Completed To-Do List */}
-                                <div
-                                    className={`flex-1 ${activeTab === "completed" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
-                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Completed
-                                        Tasks</h2>
-                                    <div
-                                        className="overflow-y-auto h-[calc(100%-2rem)] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
+                                <div className={`flex-1 ${activeTab === "completed" || window.innerWidth >= 768 ? "block" : "hidden md:block"}`}>
+                                    <h2 className="text-xl text-white font-majorMono mb-4 hidden md:block">Completed Tasks</h2>
+                                    <div className="overflow-y-auto min-h-[300px] scrollbar scrollbar-thumb-zinc-500 scrollbar-track-zinc-400">
                                         <ul className="space-y-4 pr-2">
                                             {removedTodos.map(({text, _id}) => (
                                                 <li
