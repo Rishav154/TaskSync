@@ -36,18 +36,30 @@ function Dashboard() {
         let isMounted = true;
 
         const fetchTodosAndNotes = async () => {
+            const MAX_RETRIES = 3;
+
+            const fetchWithRetry = async (url, retries = MAX_RETRIES) => {
+                try {
+                    return await axios.get(url, getAuthHeaders());
+                } catch (error) {
+                    if (retries > 0) {
+                        return fetchWithRetry(url, retries - 1);
+                    }
+                    throw error;
+                }
+            };
+
             try {
                 const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-
                 if (!token) {
                     navigate("/login", { replace: true });
                     return;
                 }
 
                 const [todosResponse, notesResponse, userResponse] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/todos`, getAuthHeaders()),
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/notes`, getAuthHeaders()),
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/user`, getAuthHeaders()),
+                    fetchWithRetry(`${import.meta.env.VITE_API_URL}/api/todos`),
+                    fetchWithRetry(`${import.meta.env.VITE_API_URL}/api/notes`),
+                    fetchWithRetry(`${import.meta.env.VITE_API_URL}/api/user`),
                 ]);
 
                 if (isMounted) {
@@ -71,6 +83,7 @@ function Dashboard() {
                 }
             }
         };
+
         fetchTodosAndNotes();
 
         return () => {
@@ -81,7 +94,7 @@ function Dashboard() {
     if (isLoading) {
         return (
             <div className="h-screen flex justify-center items-center">
-                <div className="text-white">Loading...</div>
+                <div className="text-black">Loading...</div>
             </div>
         );
     }

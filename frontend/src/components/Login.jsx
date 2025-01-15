@@ -8,19 +8,33 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+    const [rememberMe, setRememberMe] = useState(() => {
+        const remembered = localStorage.getItem("rememberMe");
+        return remembered === "true";
+    });
     const [isLoading, setIsLoading] = useState(false);
 
     const BackendBaseURL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
+        // Check for remembered username and populate if exists
+        const rememberedUsername = localStorage.getItem("username");
+        if (rememberedUsername && rememberMe) {
+            setUsername(rememberedUsername);
+        }
+
         // Only clear tokens if we don't have a valid one
         const existingToken = localStorage.getItem("token") || sessionStorage.getItem("token");
         if (!existingToken) {
             localStorage.removeItem("token");
             sessionStorage.removeItem("token");
         }
-    }, []);
+    }, [rememberMe]);
+
+    useEffect(() => {
+        localStorage.setItem("rememberMe", rememberMe.toString());
+    }, [rememberMe]);
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -77,6 +91,16 @@ function Login() {
             setError(errorMessage);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleRememberMeChange = (e) => {
+        const isChecked = e.target.checked;
+        setRememberMe(isChecked);
+
+        // Clear remembered username if unchecking
+        if (!isChecked) {
+            localStorage.removeItem("username");
         }
     };
 
@@ -147,7 +171,7 @@ function Login() {
                                 id="remember"
                                 type="checkbox"
                                 checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
+                                onChange={handleRememberMeChange}
                                 className="w-4 h-4 border border-gray-600 rounded bg-gray-700 focus:ring-3 focus:ring-blue-500"
                             />
                         </div>
